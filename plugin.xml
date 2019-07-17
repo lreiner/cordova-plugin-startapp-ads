@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cordova-plugin-startapp-ads"
+    version="1.0.0">
+    <name>StartApp Ads</name>
+    <description></description>
+    <license>MIT</license>
+    <keywords></keywords>
+    <repo>https://github.com/driftyco/cordova-plugin-template.git</repo>
+    <issue>https://github.com/driftyco/cordova-plugin-template/issues</issue>
+
+    <js-module src="www/startappads.js" name="StartAppAds">
+      <runs/>
+      <clobbers target="StartAppAds" />
+    </js-module>
+
+    <platform name="android">
+      <config-file target="AndroidManifest.xml" parent="/manifest/application">
+        <activity android:name="com.startapp.android.publish.ads.list3d.List3DActivity"
+                  android:theme="@android:style/Theme" />
+        <activity android:name="com.startapp.android.publish.adsCommon.activities.OverlayActivity"
+                  android:theme="@android:style/Theme.Translucent"
+                  android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name="com.startapp.android.publish.adsCommon.activities.FullScreenActivity"
+                  android:theme="@android:style/Theme"
+                  android:configChanges="orientation|keyboardHidden|screenSize" />
+        <service android:name="com.startapp.android.publish.common.metaData.PeriodicMetaDataService" />
+        <service android:name="com.startapp.android.publish.common.metaData.InfoEventService" />
+        <service android:name="com.startapp.android.publish.common.metaData.PeriodicJobService"
+                 android:permission="android.permission.BIND_JOB_SERVICE" />
+        <receiver android:name="com.startapp.android.publish.common.metaData.BootCompleteListener" >
+        	<intent-filter>
+        		<action android:name="android.intent.action.BOOT_COMPLETED" />
+        	</intent-filter>
+        </receiver>
+      </config-file>
+      <config-file target="AndroidManifest.xml" parent="/*">
+        <uses-permission android:name="android.permission.INTERNET" />
+      	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+      	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+      	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+      	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+      	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+      	<uses-permission android:name="android.permission.BLUETOOTH" />
+      </config-file>
+      <config-file target="res/xml/config.xml" parent="/*">
+          <feature name="StartAppAdsPlugin">
+              <param name="android-package" value="com.startapp.cordova.ad.StartAppAdsPlugin"/>
+              <param name="onload" value="true" />
+          </feature>
+      </config-file>
+      <source-file src="src/android/StartAppAdsPlugin.java" target-dir="src/startapp/ads/" />
+      <source-file src="src/android/StartApp-4.0.2.jar" target-dir="libs" />
+   </platform>
+</plugin>
