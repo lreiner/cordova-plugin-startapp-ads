@@ -27,12 +27,13 @@ import com.startapp.android.publish.adsCommon.adListeners.AdEventListener;
 public class StartAppAdsPlugin extends CordovaPlugin {
 
   private static final String TAG = "StartAppAdsPlugin";
+  private static final String applicationIDAndroid = cordova.getActivity().getIntent().getStringExtra("APP_ID_ANDROID");
   private StartAppAd startAppAd = new StartAppAd(cordova.getActivity());
 
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
     super.initialize(cordova, webView);
-    Log.d(TAG, "Initializing StartApp SDK");
-    StartAppSDK.init(cordova.getActivity(), "ApplicationID", true);
+    Log.d(TAG, "Initializing StartApp SDK with ID: " + applicationIDAndroid);
+    StartAppSDK.init(cordova.getActivity(), applicationIDAndroid, true);
     StartAppSDK.setUserConsent(cordova.getActivity(), "pas", System.currentTimeMillis(), false);
   }
 

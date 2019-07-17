@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     id="cordova-plugin-startapp-ads"
-    version="1.0.2">
+    version="1.0.3">
     <name>StartApp Ads</name>
     <description></description>
     <license>MIT</license>
