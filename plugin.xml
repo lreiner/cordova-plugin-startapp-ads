@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     id="cordova-plugin-startapp-ads"
-    version="1.0.1">
+    version="1.0.2">
     <name>StartApp Ads</name>
     <description></description>
     <license>MIT</license>
@@ -51,6 +51,6 @@
           </feature>
       </config-file>
       <source-file src="src/android/StartAppAdsPlugin.java" target-dir="src/startapp/ads/" />
-      <source-file src="src/android/StartApp-4.0.2.jar" target-dir="libs" />
+      <source-file src="src/android/StartAppInApp-4.0.2.jar" target-dir="libs" />
    </platform>
 </plugin>
