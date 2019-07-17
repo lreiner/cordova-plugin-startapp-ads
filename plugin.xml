@@ -2,13 +2,13 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     id="cordova-plugin-startapp-ads"
-    version="1.0.0">
+    version="1.0.1">
     <name>StartApp Ads</name>
     <description></description>
     <license>MIT</license>
-    <keywords></keywords>
-    <repo>https://github.com/driftyco/cordova-plugin-template.git</repo>
-    <issue>https://github.com/driftyco/cordova-plugin-template/issues</issue>
+    <keywords>startapp, ads, android, ios, plugin</keywords>
+    <repo>https://github.com/lreiner/cordova-plugin-startapp-ads.git</repo>
+    <issue>https://github.com/lreiner/cordova-plugin-startapp-ads/issues</issue>
 
     <js-module src="www/startappads.js" name="StartAppAds">
       <runs/>
