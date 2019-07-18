@@ -26,22 +26,31 @@ import com.startapp.android.publish.adsCommon.adListeners.AdEventListener;
 
 public class StartAppAdsPlugin extends CordovaPlugin {
 
+  private CallbackContext PUBLIC_CALLBACKS = null;
   private static final String TAG = "StartAppAdsPlugin";
-  private static final String applicationIDAndroid = cordova.getActivity().getIntent().getStringExtra("APP_ID_ANDROID");
-  private StartAppAd startAppAd = new StartAppAd(cordova.getActivity());
+  private StartAppAd startAppAd;
+  private CordovaWebView cWebView;
 
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
     super.initialize(cordova, webView);
-    Log.d(TAG, "Initializing StartApp SDK with ID: " + applicationIDAndroid);
-    StartAppSDK.init(cordova.getActivity(), applicationIDAndroid, true);
-    StartAppSDK.setUserConsent(cordova.getActivity(), "pas", System.currentTimeMillis(), false);
+    cWebView = webView;
   }
 
   public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
-    if (action.equals("showInterstitial")) {
+    PUBLIC_CALLBACKS = callbackContext;
+
+    if (action.equals("initStartApp")) {
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
-          showInterstitial(callbackContext);
+          initStartApp(PUBLIC_CALLBACKS, args.optString(0));
+        }
+      });
+      return true;
+    }
+    else if (action.equals("showInterstitial")) {
+      cordova.getActivity().runOnUiThread(new Runnable() {
+        public void run() {
+          showInterstitial(PUBLIC_CALLBACKS);
         }
       });
       return true;
@@ -49,7 +58,7 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     else if(action.equals("showRewardVideo")) {
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
-          showRewardVideo(callbackContext);
+          showRewardVideo(PUBLIC_CALLBACKS);
         }
       });
       return true;
@@ -57,29 +66,44 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     return false;
   }
 
-  public void showInterstitial() {
-    startAppAd.disbleAutoInterstitial();
+  public void initStartApp(CallbackContext callbackContext, String appID) {
+    Log.d(TAG, "Initializing StartApp SDK with ID: " +  appID);
+    startAppAd = new StartAppAd(cordova.getActivity());
+    StartAppSDK.init(cordova.getActivity(), appID, true);
+    StartAppSDK.setUserConsent(cordova.getActivity(), "pas", System.currentTimeMillis(), false);
+  }
 
-    startAppAd.showAd(new AdDisplayListener() {
-       @Override
-       public void adHidden(Ad ad) {
-         Log.d(TAG, "Interstitial has been closed!");
-       }
+  public void showInterstitial(CallbackContext callbackContext) {
+    startAppAd.loadAd(new AdEventListener() {
+        @Override
+        public void onReceiveAd(Ad ad) {
+            startAppAd.showAd(new AdDisplayListener() {
+                @Override
+                public void adHidden(Ad ad) {
+                  Log.d(TAG, "Interstitial has been closed!");
+                }
 
-       @Override
-       public void adDisplayed(Ad ad) {
-         Log.d(TAG, "Interstitial displayed!");
-       }
+                @Override
+                public void adDisplayed(Ad ad) {
+                  Log.d(TAG, "Interstitial displayed!");
+                }
 
-       @Override
-       public void adClicked(Ad ad) {
-         Log.d(TAG, "Interstitial Ad clicked!");
-       }
+                @Override
+                public void adClicked(Ad ad) {
+                  Log.d(TAG, "Interstitial Ad clicked!");
+                }
 
-       @Override
-       public void adNotDisplayed(Ad ad) {
-         Log.d(TAG, "Interstitial Ad not displayed!");
-       }
+                @Override
+                public void adNotDisplayed(Ad ad) {
+                  Log.d(TAG, "Interstitial Ad not displayed!");
+                }
+            });
+        }
+
+        @Override
+        public void onFailedToReceiveAd(Ad ad) {
+          Log.d(TAG, "Failed to Receive Interstitial!");
+        }
     });
   }
 
@@ -89,19 +113,23 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     rewardedVideo.setVideoListener(new VideoListener() {
       @Override
       public void onVideoCompleted() {
-        Log.d(TAG, "Videoreward can be given now!");
+        Log.d(TAG, "Video Reward can be given now!");
+        cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.reward');");
       }
     });
 
     rewardedVideo.loadAd(AdMode.REWARDED_VIDEO, new AdEventListener() {
       @Override
       public void onReceiveAd(Ad arg0) {
+          Log.d(TAG, "Reward Video loaded!");
+          cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.load');");
           rewardedVideo.showAd();
       }
 
       @Override
       public void onFailedToReceiveAd(Ad arg0) {
         Log.d(TAG, "Failed to load Rewarded Video Ad!");
+        cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.load_fail');");
       }
     });
   }

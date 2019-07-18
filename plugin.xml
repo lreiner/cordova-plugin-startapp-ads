@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     id="cordova-plugin-startapp-ads"
-    version="1.0.3">
+    version="1.0.4">
     <name>StartApp Ads</name>
     <description></description>
     <license>MIT</license>
@@ -15,7 +15,13 @@
       <clobbers target="StartAppAds" />
     </js-module>
 
+    <engines>
+        <engine name="cordova" version=">=7.0.0" />
+        <engine name="cordova-android" version=">=6.0.0" />
+    </engines>
+
     <platform name="android">
+      <preference name="APP_ID_ANDROID" default="test" />
       <config-file target="AndroidManifest.xml" parent="/manifest/application">
         <activity android:name="com.startapp.android.publish.ads.list3d.List3DActivity"
                   android:theme="@android:style/Theme" />
