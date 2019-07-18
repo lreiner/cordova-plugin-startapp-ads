@@ -22,7 +22,7 @@
 
     <platform name="android">
       <preference name="APP_ID_ANDROID" default="test" />
-      <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <config-file target="AndroidManifest.xml" mode="merge" parent="/manifest/application">
         <activity android:name="com.startapp.android.publish.ads.list3d.List3DActivity"
                   android:theme="@android:style/Theme" />
         <activity android:name="com.startapp.android.publish.adsCommon.activities.OverlayActivity"
@@ -41,7 +41,7 @@
         	</intent-filter>
         </receiver>
       </config-file>
-      <config-file target="AndroidManifest.xml" parent="/*">
+      <config-file target="AndroidManifest.xml" mode="merge" parent="/*">
         <uses-permission android:name="android.permission.INTERNET" />
       	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
       	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
