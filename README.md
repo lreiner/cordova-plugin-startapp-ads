@@ -1,4 +1,6 @@
-Cordova Plugin Template
+Cordova Plugin for StartApp Ads
 ======
 
-This is a simple starting point for building a Cordova plugin on iOS and Android.
+```
+ionic cordova plugin add cordova-plugin-startapp-ads --variable APP_ID_ANDROID="<your_android_app_id>"
+```
