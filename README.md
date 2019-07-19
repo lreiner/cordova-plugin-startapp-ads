@@ -106,7 +106,6 @@ document.addEventListener('startappads.interstitial.not_displayed', () => {
 
 document.addEventListener('startappads.interstitial.load_fail', () => {
   //interstitial failed to load
-  //IMPORTANT: if interstitial failed to load dont call StartAppAds.showInterstitial() again. StartAppAds load a new one by itself.
   //do something here
 });
 ```
