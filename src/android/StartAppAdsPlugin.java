@@ -12,11 +12,16 @@ import org.json.JSONException;
 import android.util.Log;
 import android.app.Activity;
 import android.view.View;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.startapp.android.publish.ads.nativead.NativeAdDetails;
 import com.startapp.android.publish.ads.nativead.NativeAdPreferences;
 import com.startapp.android.publish.ads.nativead.StartAppNativeAd;
 import com.startapp.android.publish.adsCommon.Ad;
+import com.startapp.android.publish.ads.banner.Banner;
+import com.startapp.android.publish.ads.banner.BannerListener;
 import com.startapp.android.publish.adsCommon.StartAppAd;
 import com.startapp.android.publish.adsCommon.StartAppAd.AdMode;
 import com.startapp.android.publish.adsCommon.StartAppSDK;
@@ -30,6 +35,8 @@ public class StartAppAdsPlugin extends CordovaPlugin {
   private static final String TAG = "StartAppAdsPlugin";
   private StartAppAd startAppAd;
   private CordovaWebView cWebView;
+  private ViewGroup parentView;
+  private Banner startAppBanner;
 
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
     super.initialize(cordova, webView);
@@ -43,6 +50,22 @@ public class StartAppAdsPlugin extends CordovaPlugin {
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
           initStartApp(PUBLIC_CALLBACKS, args.optString(0));
+        }
+      });
+      return true;
+    }
+    else if (action.equals("showBanner")) {
+      cordova.getActivity().runOnUiThread(new Runnable() {
+        public void run() {
+          showBanner(PUBLIC_CALLBACKS);
+        }
+      });
+      return true;
+    }
+    else if (action.equals("hideBanner")) {
+      cordova.getActivity().runOnUiThread(new Runnable() {
+        public void run() {
+          hideBanner(PUBLIC_CALLBACKS);
         }
       });
       return true;
@@ -73,6 +96,59 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     StartAppSDK.setUserConsent(cordova.getActivity(), "pas", System.currentTimeMillis(), false);
   }
 
+  public void showBanner(CallbackContext callbackContext) {
+    startAppBanner = new Banner(cordova.getActivity(), new BannerListener() {
+    	@Override
+    	public void onReceiveAd(View banner) {
+        Log.d(TAG, "Banner has been loaded!");
+        cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.banner.load');");
+    	}
+
+    	@Override
+    	public void onFailedToReceiveAd(View banner) {
+        Log.d(TAG, "Banner load failed!");
+        cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.banner.load_fail');");
+    	}
+
+    	@Override
+    	public void onClick(View banner) {
+        Log.d(TAG, "Banner clicked!");
+        cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.banner.clicked');");
+    	}
+    });
+
+    View view = cWebView.getView();
+    ViewGroup wvParentView = (ViewGroup) view.getParent();
+
+    if (parentView == null) {
+        parentView = new LinearLayout(cWebView.getContext());
+    }
+
+    if (wvParentView != null && wvParentView != parentView) {
+        wvParentView.removeView(view);
+        LinearLayout content = (LinearLayout) parentView;
+        content.setOrientation(LinearLayout.VERTICAL);
+        parentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0.0F));
+        view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0F));
+        parentView.addView(view);
+        wvParentView.addView(parentView);
+        parentView.addView(startAppBanner);
+    }
+
+    parentView.bringToFront();
+    parentView.requestLayout();
+    parentView.requestFocus();
+  }
+
+  public void hideBanner(CallbackContext callbackContext) {
+    if (startAppBanner != null) {
+        startAppBanner.hideBanner();
+        startAppBanner.setVisibility(View.GONE);
+        parentView = null;
+        cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.banner.hide');");
+    }
+  }
+
   public void showInterstitial(CallbackContext callbackContext) {
     startAppAd.loadAd(new AdEventListener() {
         @Override
@@ -81,21 +157,25 @@ public class StartAppAdsPlugin extends CordovaPlugin {
                 @Override
                 public void adHidden(Ad ad) {
                   Log.d(TAG, "Interstitial has been closed!");
+                  cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.interstitial.closed');");
                 }
 
                 @Override
                 public void adDisplayed(Ad ad) {
                   Log.d(TAG, "Interstitial displayed!");
+                  cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.interstitial.displayed');");
                 }
 
                 @Override
                 public void adClicked(Ad ad) {
                   Log.d(TAG, "Interstitial Ad clicked!");
+                  cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.interstitial.clicked');");
                 }
 
                 @Override
                 public void adNotDisplayed(Ad ad) {
                   Log.d(TAG, "Interstitial Ad not displayed!");
+                  cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.interstitial.not_displayed');");
                 }
             });
         }
@@ -103,6 +183,7 @@ public class StartAppAdsPlugin extends CordovaPlugin {
         @Override
         public void onFailedToReceiveAd(Ad ad) {
           Log.d(TAG, "Failed to Receive Interstitial!");
+          cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.interstitial.load_fail');");
         }
     });
   }
