@@ -69,7 +69,7 @@ document.addEventListener('startappads.banner.load_fail', () => {
 
 document.addEventListener('startappads.banner.clicked', () => {
   //banner has been clicked
-  //do something here
+  //do something here. Usefull to hide banner to prevent click bombing.
 });
 
 document.addEventListener('startappads.banner.hide', () => {
@@ -77,8 +77,41 @@ document.addEventListener('startappads.banner.hide', () => {
   //do something here
 });
 ```
+### 4. Show Interstitial Ads
+Show a Interstitial Ad:
+```javascript
+StartAppAds.showInterstitial();
+```
+Events you can subscribe to (recommended to put it in the **constructor** of any page):
+```javascript
+document.addEventListener('startappads.interstitial.closed', () => {
+  //interstitial closed by user
+  //do something here
+});
 
-### 4. Show Rewarded Video Ads
+document.addEventListener('startappads.interstitial.displayed', () => {
+  //interstitial showed up
+  //do something here
+});
+
+document.addEventListener('startappads.interstitial.clicked', () => {
+  //interstitial clicked by user
+  //do something here
+});
+
+document.addEventListener('startappads.interstitial.not_displayed', () => {
+  //interstitial loaded and ready but somehow not showed to user
+  //do something here
+});
+
+document.addEventListener('startappads.interstitial.load_fail', () => {
+  //interstitial failed to load
+  //IMPORTANT: if interstitial failed to load dont call StartAppAds.showInterstitial() again. StartAppAds load a new one by itself.
+  //do something here
+});
+```
+
+### 5. Show Rewarded Video Ads
 Show a Rewarded Video Ad:
 ```javascript
 StartAppAds.showRewardVideo();
