@@ -10,7 +10,7 @@ Cordova Plugin for StartApp Ads. This Cordova Plugin is made to use StartApp Ads
 <table>
 <tr>
 <td>
-:warning: At the moment only ANDROID is supported. I'm working hard at the moment to implement iOS as well. Stay tuned for future updates!
+:warning: Only ANDROID is supported at the moment. I'm working hard to implement iOS as well. Stay tuned for future updates!
 </td>
 </tr>
 </table>
