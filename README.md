@@ -29,14 +29,13 @@ ionic cordova plugin add https://github.com/lreiner/cordova-plugin-startapp-ads.
 ```
 
 ### 2. Setup the Plugin
-You need to init your Plugin with your App ID from StartApp first. I would recommend to do it in your **app.component.ts** file.
-**NOTE: This must be declared in every Page where you want to use StartAppAds!**
 To start declare the Plugin below your imports:
+**NOTE: This must be declared in every Page where you want to use StartAppAds!**
 ```javascript
 import ..... //your imports
 declare var StartAppAds:any;
 ```
-Now you can init the Plugin in your **platform.ready** function
+Now you need to init your Plugin with your App ID from StartApp first. I would recommend to do it in your **app.component.ts** file when platfrom is ready.
 ```javascript
 this.platform.ready().then(() => {
   if(this.platform.is("android")) {
