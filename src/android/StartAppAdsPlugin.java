@@ -239,7 +239,25 @@ public class StartAppAdsPlugin extends CordovaPlugin {
 
   public void showRewardVideo(CallbackContext callbackContext) {
     if (rewardedVideo != null) {
-      rewardedVideo.showAd();
+      Log.d(TAG, "Reward Video show now!");
+      rewardedVideo.showAd(new AdDisplayListener() {
+        @Override
+        public void adHidden(Ad ad) {
+          Log.d(TAG, "Rewarded Video closed!");
+          cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.closed');");
+        }
+        @Override
+        public void adClicked(Ad ad) {
+          Log.d(TAG, "Rewarded Video clicked!");
+          cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.clicked');");
+        }
+        @Override
+        public void adDisplayed(Ad ad) {
+        }
+        @Override
+        public void adNotDisplayed(Ad ad) {
+        }
+      });
     } else {
       Log.d(TAG, "Video Reward need to load before call it!");
     }
