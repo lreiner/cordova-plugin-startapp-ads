@@ -19,6 +19,10 @@ var StartAppAds = {
 	showInterstitial: function() {
 		exec(function(){}, function(){}, "StartAppAdsPlugin", "showInterstitial", []);
 	},
+	loadRewardVideo: function(autoShow) {
+		autoShow = (typeof autoShow === "boolean") ? autoShow : true;
+		exec(function(){}, function(){}, "StartAppAdsPlugin", "loadRewardVideo", [ autoShow ]);
+	},
 	showRewardVideo: function() {
 		exec(function(){}, function(){}, "StartAppAdsPlugin", "showRewardVideo", []);
 	}
