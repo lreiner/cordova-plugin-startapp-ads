@@ -109,6 +109,10 @@ document.addEventListener('startappads.interstitial.load_fail', () => {
   //do something here
 });
 ```
+#### IMPORTANT:
+```
+Do not call `showInterstitial()` from within `load_fail` event. The SDK will automatically try to reload an ad upon a failure.
+```
 
 ### 5. Show Rewarded Video Ads
 Show a Rewarded Video Ad:
@@ -124,6 +128,16 @@ document.addEventListener('startappads.reward_video.reward', () => {
 
 document.addEventListener('startappads.reward_video.load', () => {
   //reward video finished loading
+  //do something here
+});
+
+document.addEventListener('startappads.reward_video.closed', () => {
+  //user closed video reward 
+  //do something here
+});
+
+document.addEventListener('startappads.reward_video.clicked', () => {
+  //user click on video reward 
   //do something here
 });
 

@@ -37,6 +37,7 @@ public class StartAppAdsPlugin extends CordovaPlugin {
   private CordovaWebView cWebView;
   private ViewGroup parentView;
   private Banner startAppBanner;
+  private StartAppAd rewardedVideo = null;
 
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
     super.initialize(cordova, webView);
@@ -49,7 +50,11 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     if (action.equals("initStartApp")) {
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
-          initStartApp(PUBLIC_CALLBACKS, args.optString(0));
+          String appId = args.optString(0);
+          boolean disableReturnAd = args.optBoolean(1);
+          boolean disableSplashAd = args.optBoolean(2);
+
+          initStartApp(appId, disableReturnAd, disableSplashAd, PUBLIC_CALLBACKS);
         }
       });
       return true;
@@ -78,6 +83,15 @@ public class StartAppAdsPlugin extends CordovaPlugin {
       });
       return true;
     }
+    else if(action.equals("loadRewardVideo")) {
+      cordova.getActivity().runOnUiThread(new Runnable() {
+        public void run() {
+          boolean autoShow = args.optBoolean(0);
+          loadRewardVideo(autoShow, PUBLIC_CALLBACKS);
+        }
+      });
+      return true;
+    }
     else if(action.equals("showRewardVideo")) {
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
@@ -89,11 +103,15 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     return false;
   }
 
-  public void initStartApp(CallbackContext callbackContext, String appID) {
-    Log.d(TAG, "Initializing StartApp SDK with ID: " +  appID);
+  public void initStartApp(String appID, Boolean disableReturnAd, Boolean disableSplashAd, CallbackContext callbackContext) {
+    Log.d(TAG, "Initializing StartApp SDK with ID: " +  appID + " ReturnAd: " + disableReturnAd + " SplashAd: " + disableSplashAd);
     startAppAd = new StartAppAd(cordova.getActivity());
-    StartAppSDK.init(cordova.getActivity(), appID, true);
+    StartAppSDK.init(cordova.getActivity(), appID, disableReturnAd);
     StartAppSDK.setUserConsent(cordova.getActivity(), "pas", System.currentTimeMillis(), false);
+
+    if (disableSplashAd) {
+      StartAppAd.disableSplash();
+    }
   }
 
   public void showBanner(CallbackContext callbackContext) {
@@ -188,8 +206,8 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     });
   }
 
-  public void showRewardVideo(CallbackContext callbackContext) {
-    final StartAppAd rewardedVideo = new StartAppAd(cordova.getActivity());
+  public void loadRewardVideo(Boolean autoShow, CallbackContext callbackContext) {
+    rewardedVideo = new StartAppAd(cordova.getActivity());
 
     rewardedVideo.setVideoListener(new VideoListener() {
       @Override
@@ -204,7 +222,11 @@ public class StartAppAdsPlugin extends CordovaPlugin {
       public void onReceiveAd(Ad arg0) {
           Log.d(TAG, "Reward Video loaded!");
           cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.load');");
-          rewardedVideo.showAd();
+
+          if (autoShow) {
+            Log.d(TAG, "Video Reward auto show!");
+            rewardedVideo.showAd();
+          }
       }
 
       @Override
@@ -213,5 +235,31 @@ public class StartAppAdsPlugin extends CordovaPlugin {
         cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.load_fail');");
       }
     });
+  }
+
+  public void showRewardVideo(CallbackContext callbackContext) {
+    if (rewardedVideo != null) {
+      Log.d(TAG, "Reward Video show now!");
+      rewardedVideo.showAd(new AdDisplayListener() {
+        @Override
+        public void adHidden(Ad ad) {
+          Log.d(TAG, "Rewarded Video closed!");
+          cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.closed');");
+        }
+        @Override
+        public void adClicked(Ad ad) {
+          Log.d(TAG, "Rewarded Video clicked!");
+          cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.clicked');");
+        }
+        @Override
+        public void adDisplayed(Ad ad) {
+        }
+        @Override
+        public void adNotDisplayed(Ad ad) {
+        }
+      });
+    } else {
+      Log.d(TAG, "Video Reward need to load before call it!");
+    }
   }
 }
