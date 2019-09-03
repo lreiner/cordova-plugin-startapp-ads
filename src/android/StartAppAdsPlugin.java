@@ -82,6 +82,15 @@ public class StartAppAdsPlugin extends CordovaPlugin {
       });
       return true;
     }
+    else if(action.equals("loadRewardVideo")) {
+      cordova.getActivity().runOnUiThread(new Runnable() {
+        public void run() {
+          boolean autoShow = args.getBoolean(0);
+          loadRewardVideo(autoShow, PUBLIC_CALLBACKS);
+        }
+      });
+      return true;
+    }
     else if(action.equals("showRewardVideo")) {
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
@@ -196,8 +205,8 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     });
   }
 
-  public void showRewardVideo(CallbackContext callbackContext) {
-    final StartAppAd rewardedVideo = new StartAppAd(cordova.getActivity());
+  public void loadRewardVideo(Boolean autoShow, CallbackContext callbackContext) {
+    rewardedVideo = new StartAppAd(cordova.getActivity());
 
     rewardedVideo.setVideoListener(new VideoListener() {
       @Override
@@ -212,7 +221,11 @@ public class StartAppAdsPlugin extends CordovaPlugin {
       public void onReceiveAd(Ad arg0) {
           Log.d(TAG, "Reward Video loaded!");
           cWebView.loadUrl("javascript:cordova.fireDocumentEvent('startappads.reward_video.load');");
-          rewardedVideo.showAd();
+
+          if (autoShow) {
+            Log.d(TAG, "Video Reward auto show!");
+            rewardedVideo.showAd();
+          }
       }
 
       @Override
