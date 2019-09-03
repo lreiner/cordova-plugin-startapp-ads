@@ -235,4 +235,12 @@ public class StartAppAdsPlugin extends CordovaPlugin {
       }
     });
   }
+
+  public void showRewardVideo(CallbackContext callbackContext) {
+    if (rewardedVideo != null) {
+      rewardedVideo.showAd();
+    } else {
+      Log.d(TAG, "Video Reward need to load before call it!");
+    }
+  }
 }
