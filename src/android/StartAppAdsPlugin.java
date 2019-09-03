@@ -51,8 +51,8 @@ public class StartAppAdsPlugin extends CordovaPlugin {
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
           String appId = args.optString(0);
-          boolean disableReturnAd = args.getBoolean(1);
-          boolean disableSplashAd = args.getBoolean(2);
+          boolean disableReturnAd = args.optBoolean(1);
+          boolean disableSplashAd = args.optBoolean(2);
 
           initStartApp(appId, disableReturnAd, disableSplashAd, PUBLIC_CALLBACKS);
         }
@@ -86,7 +86,7 @@ public class StartAppAdsPlugin extends CordovaPlugin {
     else if(action.equals("loadRewardVideo")) {
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
-          boolean autoShow = args.getBoolean(0);
+          boolean autoShow = args.optBoolean(0);
           loadRewardVideo(autoShow, PUBLIC_CALLBACKS);
         }
       });
