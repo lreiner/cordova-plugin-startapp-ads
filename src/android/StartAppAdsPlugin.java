@@ -37,6 +37,7 @@ public class StartAppAdsPlugin extends CordovaPlugin {
   private CordovaWebView cWebView;
   private ViewGroup parentView;
   private Banner startAppBanner;
+  private StartAppAd rewardedVideo = null;
 
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
     super.initialize(cordova, webView);
